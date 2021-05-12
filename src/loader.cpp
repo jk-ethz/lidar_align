@@ -1,6 +1,37 @@
 #include <geometry_msgs/TransformStamped.h>
+#define LZ4_stream_t LZ4_stream_t_deprecated
+#define LZ4_resetStream LZ4_resetStream_deprecated
+#define LZ4_createStream LZ4_createStream_deprecated
+#define LZ4_freeStream LZ4_freeStream_deprecated
+#define LZ4_loadDict LZ4_loadDict_deprecated
+#define LZ4_compress_fast_continue LZ4_compress_fast_continue_deprecated
+#define LZ4_saveDict LZ4_saveDict_deprecated
+#define LZ4_streamDecode_t LZ4_streamDecode_t_deprecated
+#define LZ4_compress_continue LZ4_compress_continue_deprecated
+#define LZ4_compress_limitedOutput_continue LZ4_compress_limitedOutput_continue_deprecated
+#define LZ4_createStreamDecode LZ4_createStreamDecode_deprecated
+#define LZ4_freeStreamDecode LZ4_freeStreamDecode_deprecated
+#define LZ4_setStreamDecode LZ4_setStreamDecode_deprecated
+#define LZ4_decompress_safe_continue LZ4_decompress_safe_continue_deprecated
+#define LZ4_decompress_fast_continue LZ4_decompress_fast_continue_deprecated
 #include <rosbag/bag.h>
+#undef LZ4_stream_t
+#undef LZ4_resetStream
+#undef LZ4_createStream
+#undef LZ4_freeStream
+#undef LZ4_loadDict
+#undef LZ4_compress_fast_continue
+#undef LZ4_saveDict
+#undef LZ4_streamDecode_t
+#undef LZ4_compress_continue
+#undef LZ4_compress_limitedOutput_continue
+#undef LZ4_createStreamDecode
+#undef LZ4_freeStreamDecode
+#undef LZ4_setStreamDecode
+#undef LZ4_decompress_safe_continue
+#undef LZ4_decompress_fast_continue
 #include <rosbag/view.h>
+#include <pcl/filters/voxel_grid.h>
 
 #include "lidar_align/loader.h"
 #include "lidar_align/transform.h"
@@ -51,7 +82,13 @@ void Loader::parsePointcloudMsg(const sensor_msgs::PointCloud2 msg,
     pointcloud->header = raw_pointcloud.header;
   } else {
     pcl::PointCloud<pcl::PointXYZ> raw_pointcloud;
+    pcl::PointCloud<pcl::PointXYZ>::ConstPtr raw_pointcloud_ptr(&raw_pointcloud);
     pcl::fromROSMsg(msg, raw_pointcloud);
+    
+    pcl::VoxelGrid<pcl::PointXYZ> vg;
+    vg.setLeafSize(0.02, 0.02, 0.02);
+    vg.setInputCloud(raw_pointcloud_ptr);
+    vg.filter(raw_pointcloud);
 
     for (const pcl::PointXYZ& raw_point : raw_pointcloud) {
       PointAllFields point;
