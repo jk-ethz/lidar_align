@@ -81,8 +81,8 @@ void Loader::parsePointcloudMsg(const sensor_msgs::PointCloud2 msg,
     }
     pointcloud->header = raw_pointcloud.header;
   } else {
-    pcl::PointCloud<pcl::PointXYZ> raw_pointcloud;
-    pcl::PointCloud<pcl::PointXYZ>::ConstPtr raw_pointcloud_ptr(&raw_pointcloud);
+    pcl::PointCloud<pcl::PointXYZ>::Ptr raw_pointcloud_ptr(new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::PointCloud<pcl::PointXYZ>& raw_pointcloud = *raw_pointcloud_ptr;
     pcl::fromROSMsg(msg, raw_pointcloud);
     
     pcl::VoxelGrid<pcl::PointXYZ> vg;
