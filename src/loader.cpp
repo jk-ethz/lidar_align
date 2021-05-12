@@ -85,10 +85,12 @@ void Loader::parsePointcloudMsg(const sensor_msgs::PointCloud2 msg,
     pcl::PointCloud<pcl::PointXYZ>& raw_pointcloud = *raw_pointcloud_ptr;
     pcl::fromROSMsg(msg, raw_pointcloud);
     
+    const size_t size_before_filter = raw_pointcloud.size();
     pcl::VoxelGrid<pcl::PointXYZ> vg;
-    vg.setLeafSize(0.02, 0.02, 0.02);
+    vg.setLeafSize(0.01, 0.01, 0.01);
     vg.setInputCloud(raw_pointcloud_ptr);
     vg.filter(raw_pointcloud);
+    std::cout << "Size before filter: " << size_before_filter << ", size after: " << raw_pointcloud.size() << std::endl;
 
     for (const pcl::PointXYZ& raw_point : raw_pointcloud) {
       PointAllFields point;
